@@ -1,0 +1,26 @@
+.sidebar {
+  border: 1px solid black;
+  width: 310px;
+  color: #fff;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+@media (max-width: 930px) {
+  .sidebar {
+    width: 100%;
+    padding: 0 100px;
+    background-color: var(--second-bg-color);
+  }
+  .close {
+    display: none;
+  }
+} 
+
+@media (max-width: 730px) {
+  .sidebar {
+    padding: 0;
+  }
+}

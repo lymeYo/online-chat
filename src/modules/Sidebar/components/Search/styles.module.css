@@ -1,0 +1,22 @@
+.search-wrapper {
+  background-color: var(--main-bg-color);
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+.search {
+  background-color: var(--hover-bg-color);
+  display: flex;
+  align-items: center;
+  padding: 10px 8px;
+  border-radius: 10px;
+}
+
+.search input {
+  margin-left: 8px;
+  width: 100%;
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  outline: none;
+}

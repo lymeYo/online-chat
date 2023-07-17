@@ -1,0 +1,37 @@
+.wrapper {
+  border-bottom: 1px solid var(--hover-bg-color);
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  background-color: var(--main-bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+}
+.profile {
+  display: flex;
+  flex-direction: column;
+}
+.name {}
+.activity {
+  font-size: 14px;
+  color: var(--main-dim-color);
+}
+.buttons {
+}
+
+.icon {
+  width: 25px;  
+  cursor: pointer;
+}
+
+.icon-back {
+  display: none;
+}
+@media (max-width: 930px) {
+  .icon-back {
+    display: block;
+  }
+}

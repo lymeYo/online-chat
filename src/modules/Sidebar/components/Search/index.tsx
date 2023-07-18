@@ -1,50 +1,62 @@
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
 import Icon from './Icon'
 import styles from './styles.module.css'
 import { db } from '@/database/firebase'
 import { useRef } from 'react'
 import { UserT, getUser } from '@/Auth/AuthContextProvider'
+import {
+  MessageDocument,
+  UserPreview,
+  convertMessageDocumentsToList,
+  datePassedToString,
+  getConvertedUserChats
+} from '../../constants'
 
 type SearchProps = {
-  setList: (results: UserT[]) => void
+  setList: (results: UserPreview[]) => void
   setIsSearching: (isSearching: boolean) => void
 }
 const Search = ({ setList, setIsSearching }: SearchProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { name: ownerName } = getUser()
+  const { name: ownerName, uid: ownerUid } = getUser()
   const handleSearch = async () => {
     const name = inputRef.current?.value
     if (!name) return
 
     try {
-      const usersRef = collection(db, 'users')
-      const q = query(
-        usersRef,
-        where('displayName', '==', name),
-        where('displayName', '!=', ownerName)
-      )
-      const querySnapshot = await getDocs(q)
-      const results: UserT[] = []
-      querySnapshot.forEach(doc => {
-        const incomingData = doc.data()
-        const data: UserT = {
-          name: incomingData.displayName,
-          uid: incomingData.uid,
-          photoURL: incomingData.photoURL
-        }
-        results.push(data)
-      })
-      setList(results)
+      const userChatsRef = doc(db, 'userChats', ownerUid)
+      const resultDoc = await getDoc(userChatsRef)
+      const userChats = getConvertedUserChats(resultDoc)
+
+      const newList: UserPreview[] = userChats.map(convertMessageDocumentsToList)
+
+      setList(newList)
+
+      // const results: UserPreview[] = []
+      // querySnapshot.forEach(doc => {
+      //   const incomingData = doc.data()
+      //   console.log(incomingData)
+
+      //   const data: UserPreview = {
+      //     name: incomingData.displayName,
+      //     uid: incomingData.uid,
+      //     photoURL: incomingData.photoURL,
+      //     lastMessage: 'TEST'
+      //   }
+      //   results.push(data)
+      // })
+      // setList(results)
     } catch (err) {
       console.error(err)
     }
   }
-  const handleChange = () => {
+  const handleChange = async () => {
     const name = inputRef.current?.value
+
     if (!name) setIsSearching(false)
     else {
-      handleSearch()
       setIsSearching(true)
+      await handleSearch()
     }
   }
   return (

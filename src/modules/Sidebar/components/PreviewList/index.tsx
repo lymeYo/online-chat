@@ -1,18 +1,17 @@
-import { UserT } from '@/Auth/AuthContextProvider.tsx'
 import Item from './Item.tsx'
 import InfoMessage from './InfoMessage'
-
-import styles from './styles.module.css'
 import {
   ChatState,
   getCurrentChat,
   getDispatch,
   setUserAction
 } from '@/ChatProvider/ChatContextProvider.tsx'
-import { useEffect } from 'react'
+import { UserPreview } from '../../constants.ts'
+
+import styles from './styles.module.css'
 
 type PreviewListProps = {
-  list: UserT[]
+  list: UserPreview[]
   openChat: () => void
   isSearching: boolean
 }
@@ -23,7 +22,7 @@ const PreviewList = ({ list, openChat, isSearching }: PreviewListProps) => {
   return (
     <>
       <ul className={styles.list}>
-        {list.map((user: UserT, ind: number) => {
+        {list.map((user: UserPreview, ind: number) => {
           const openChatHandler = () => {
             setUserAction(user, dispatch)
             openChat()
@@ -35,7 +34,8 @@ const PreviewList = ({ list, openChat, isSearching }: PreviewListProps) => {
               name={user.name}
               photoURL={user.photoURL}
               uid={user.uid}
-              text={''}
+              text={user.lastMessage}
+              date={user.lastMessageDate}
               active={currentChat.user?.uid == user.uid}
             />
           )

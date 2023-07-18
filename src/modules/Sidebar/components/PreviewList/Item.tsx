@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { getUser } from '@/Auth/AuthContextProvider'
 import { db } from '@/database/firebase'
+import { getCombineIds } from '@/constants'
 
 import styles from './styles.module.css'
-import { getCombineIds } from '@/constants'
 
 type ItemProps = {
   openChat: () => void
@@ -13,16 +13,16 @@ type ItemProps = {
   uid: string
   photoURL: string
   text: string
+  date: string
 }
-const Item = ({ openChat, active, name, uid, photoURL, text }: ItemProps) => {
+const Item = ({ openChat, active, name, uid, photoURL, text, date }: ItemProps) => {
   const { uid: ownerUid, name: ownerName, photoURL: ownerPhotoURL } = getUser()
 
   const handleUserChats = async () => {
-    const combinedUids = getCombineIds(ownerUid, uid) //иначе если А написал Б то combinedUids будет АБ, а если Б написал А - то БА, хотя чат один
+    const combinedUids = getCombineIds(ownerUid, uid)
     const chatsRef = doc(db, 'chats', combinedUids)
 
     const result = await getDoc(chatsRef)
-    // console.log(result.data())
 
     if (!result.exists()) {
       const userChatsRef = doc(db, 'userChats', uid)
@@ -70,7 +70,7 @@ const Item = ({ openChat, active, name, uid, photoURL, text }: ItemProps) => {
         <span>{name}</span>
         <div className={styles['text-area']}>
           <p className={styles.text}>{previewText}</p>
-          <span className={styles.time}>21:02</span>
+          <span className={styles.time}>{date}</span>
         </div>
       </div>
     </li>

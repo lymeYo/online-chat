@@ -1,51 +1,42 @@
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore'
 import Icon from './Icon'
 import styles from './styles.module.css'
 import { db } from '@/database/firebase'
 import { useRef } from 'react'
-import { UserT, getUser } from '@/Auth/AuthContextProvider'
-import {
-  MessageDocument,
-  UserPreview,
-  convertMessageDocumentsToList,
-  datePassedToString,
-  getConvertedUserChats
-} from '../../constants'
+import { UserPreview } from '../../constants'
 
 type SearchProps = {
-  setList: (results: UserPreview[]) => void
+  setSearchChats: (results: UserPreview[]) => void
   setIsSearching: (isSearching: boolean) => void
+  userChats: UserPreview[]
 }
-const Search = ({ setList, setIsSearching }: SearchProps) => {
+
+const Search = ({ setSearchChats, setIsSearching, userChats }: SearchProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const { name: ownerName, uid: ownerUid } = getUser()
   const handleSearch = async () => {
     const name = inputRef.current?.value
     if (!name) return
 
     try {
-      const userChatsRef = doc(db, 'userChats', ownerUid)
-      const resultDoc = await getDoc(userChatsRef)
-      const userChats = getConvertedUserChats(resultDoc)
+      const usersRef = collection(db, 'users')
+      const q = query(usersRef, where('displayName', '==', name))
+      const querySnapshot = await getDocs(q)
+      const newSearchChats: UserPreview[] = userChats.filter(chat => chat.name == name)
+      querySnapshot.forEach(doc => {
+        const data = doc.data()
+        if (newSearchChats.find(chat => chat.uid == data.uid)) return
 
-      const newList: UserPreview[] = userChats.map(convertMessageDocumentsToList)
+        const searchedUser: UserPreview = {
+          uid: data.uid,
+          name: data.displayName,
+          photoURL: data.photoURL,
+          lastMessage: '',
+          lastMessageDate: ''
+        }
+        newSearchChats.push(searchedUser)
+      })
 
-      setList(newList)
-
-      // const results: UserPreview[] = []
-      // querySnapshot.forEach(doc => {
-      //   const incomingData = doc.data()
-      //   console.log(incomingData)
-
-      //   const data: UserPreview = {
-      //     name: incomingData.displayName,
-      //     uid: incomingData.uid,
-      //     photoURL: incomingData.photoURL,
-      //     lastMessage: 'TEST'
-      //   }
-      //   results.push(data)
-      // })
-      // setList(results)
+      setSearchChats(newSearchChats)
     } catch (err) {
       console.error(err)
     }

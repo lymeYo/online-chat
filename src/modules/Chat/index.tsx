@@ -2,7 +2,7 @@ import { isChatSelected } from '@/ChatProvider/ChatContextProvider'
 import InputArea from './components/InputArea'
 import MessageArea from './components/MessageArea'
 import ParametersPanel from './components/ParametersPanel'
-import CatImage from '@/ui/images/cat.png'
+import InfoMessage from './components/InfoMessage'
 
 import styles from './style.module.css'
 
@@ -21,10 +21,7 @@ const Chat = ({ closeChat, isChatOpen }: ChatProps) => {
           <InputArea />
         </>
       ) : (
-        <div className={styles.info}>
-          <span>Откройте диалог!</span>
-          <img src={CatImage} alt='' />
-        </div>
+        <InfoMessage />
       )}
     </div>
   )

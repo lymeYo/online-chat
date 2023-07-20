@@ -39,14 +39,15 @@ const Sidebar = ({ openChat, isChatOpen }: SidebarProps) => {
     }
   }, [uid])
 
+  const chats = isSearching ? searchChats : userChats
   return (
     <div className={`${styles.sidebar} ${isChatOpen ? styles.close : ''}`}>
-      <Search setList={setSearchChats} setIsSearching={setIsSearching} />
-      <PreviewList
-        list={isSearching ? searchChats : userChats}
-        openChat={openChat}
-        isSearching={isSearching}
+      <Search
+        setSearchChats={setSearchChats}
+        setIsSearching={setIsSearching}
+        userChats={userChats}
       />
+      <PreviewList list={chats} openChat={openChat} isSearching={isSearching} />
     </div>
   )
 }

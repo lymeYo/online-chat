@@ -8,6 +8,7 @@ import { v4 as uuid } from 'uuid'
 
 import styles from './style.module.css'
 import { UserT, getUser } from '@/Auth/AuthContextProvider'
+import { getCombineIds } from '@/constants'
 
 const InputArea = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -34,14 +35,14 @@ const InputArea = () => {
         text,
         sender: ownerUid
       },
-      date: Timestamp.now()
+      [chatId + '.date']: serverTimestamp()
     })
     await updateDoc(userChatsRef, {
       [chatId + '.lastMessage']: {
         text,
         sender: ownerUid
       },
-      date: Timestamp.now()
+      [chatId + '.date']: serverTimestamp()
     })
   }
 

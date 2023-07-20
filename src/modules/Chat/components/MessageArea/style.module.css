@@ -1,8 +1,10 @@
 .wrapper {
   flex: 1 1 auto;
-  padding: 60px 30px 50px;
+  margin-top: 50px;
+  padding: 0 30px 10px;
   position: relative;
-  overflow-y: auto;
+  overflow-y: scroll;
+  max-height: calc(100vh - 110px);
 }
 .message-wrapper {
   display: flex;

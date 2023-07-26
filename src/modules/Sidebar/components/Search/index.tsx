@@ -31,7 +31,8 @@ const Search = ({ setSearchChats, setIsSearching, userChats }: SearchProps) => {
           name: data.displayName,
           photoURL: data.photoURL,
           lastMessage: '',
-          lastMessageDate: ''
+          lastMessageDate: '',
+          time: 0
         }
         newSearchChats.push(searchedUser)
       })

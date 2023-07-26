@@ -5,12 +5,12 @@
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-  border: 1px solid black;
 }
 
 .text {
   text-align: center;
   color: var(--main-dim-color);
+  overflow: hidden;
 }
 
 .image img {

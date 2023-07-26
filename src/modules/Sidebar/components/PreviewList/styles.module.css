@@ -32,7 +32,6 @@
   padding: 8px 0;
   margin-left: 5px;
   width: 100%;
-  /* border: 1px solid white; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -43,6 +42,9 @@
 .text {
   color: var(--main-dim-color);
   font-size: 14px;
+  max-width: 170px;
+  max-height: 18px;
+  overflow: hidden;
 }
 .time {
   flex: 1 1 auto;

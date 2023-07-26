@@ -1,14 +1,15 @@
 import Message from './Message'
 import { db } from '@/database/firebase'
-import { doc, getDoc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import { getUser } from '@/Auth/AuthContextProvider'
 import { getCombineIds } from '@/constants'
 import { getCurrentChat } from '@/ChatProvider/ChatContextProvider'
 import { MessageT } from './constants'
 import useLoadingState from '@/hooks/useLoadingState'
-import { RefObject, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import styles from './style.module.css'
+import Loading from '@/ui/Loading'
 
 const MessageArea = () => {
   const { uid: ownerUid } = getUser()
@@ -40,7 +41,7 @@ const MessageArea = () => {
     return () => {
       unsub()
     }
-  }, [])
+  }, [user])
 
   return (
     <div className={styles.wrapper} ref={chatElementRef} id='test'>
@@ -52,18 +53,7 @@ const MessageArea = () => {
             type={message.senderId == ownerUid ? 'outcoming' : 'incoming'}
           />
         ))}
-      {/* <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} />
-      <Message text={'message.text'} type={'incoming'} /> */}
+      {loading ? <Loading /> : ''}
     </div>
   )
 }

@@ -27,7 +27,6 @@ const Item = ({ openChat, active, name, uid, photoURL, text, date }: ItemProps) 
     if (!result.exists()) {
       const userChatsRef = doc(db, 'userChats', uid)
       const ownerChatsRef = doc(db, 'userChats', ownerUid)
-      //создаю chat в chats collections
       await setDoc(chatsRef, { messages: [] })
 
       //создаю user chats
@@ -55,21 +54,15 @@ const Item = ({ openChat, active, name, uid, photoURL, text, date }: ItemProps) 
     openChat()
     await handleUserChats()
   }
-
-  const lettersLimit = 30
-  const previewText: string = useMemo(() => text.slice(0, lettersLimit), [text])
   return (
     <li onClick={clickHandler} className={`${styles.item} ${active ? styles.active : ''}`}>
       <div className={styles.image}>
-        <img
-          src='https://sun9-1.userapi.com/impg/QSV30CLHCMRaMlocs-Ht1_uV0zJEJeJRwOofzA/IYTlpAf10KQ.jpg?size=564x705&quality=95&sign=b9dc86b2de569405cf705bfd3bd6cdef&type=albums'
-          alt=''
-        />
+        <img src={photoURL} alt='' />
       </div>
       <div className={styles.body}>
         <span>{name}</span>
         <div className={styles['text-area']}>
-          <p className={styles.text}>{previewText}</p>
+          <p className={styles.text}>{text}</p>
           <span className={styles.time}>{date}</span>
         </div>
       </div>

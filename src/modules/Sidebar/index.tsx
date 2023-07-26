@@ -4,15 +4,11 @@ import { db } from '@/database/firebase'
 import { getUser } from '@/Auth/AuthContextProvider'
 import Search from './components/Search'
 import PreviewList from './components/PreviewList'
-import {
-  MessageDocument,
-  UserPreview,
-  convertMessageDocumentsToList,
-  datePassedToString,
-  getConvertedUserChats
-} from './constants'
+import { UserPreview, convertMessageDocumentsToList, getConvertedUserChats } from './constants'
 
 import styles from './style.module.css'
+import useLoadingState from '@/hooks/useLoadingState'
+import Loading from '@/ui/Loading'
 
 type SidebarProps = {
   openChat: () => void
@@ -22,17 +18,16 @@ const Sidebar = ({ openChat, isChatOpen }: SidebarProps) => {
   const [userChats, setUserChats] = useState<UserPreview[]>([])
   const [searchChats, setSearchChats] = useState<UserPreview[]>([])
   const [isSearching, setIsSearching] = useState<boolean>(false)
-
+  const [isLoading, setIsLoading] = useState<boolean>(true)
   const { uid } = getUser()
+
   useEffect(() => {
     const userChatsRef = doc(db, 'userChats', uid)
-    const unsub = onSnapshot(userChatsRef, async resultDoc => {
+    const unsub = onSnapshot(userChatsRef, resultDoc => {
       const arrayDocuments = getConvertedUserChats(resultDoc)
-      // console.log(arrayDocuments, resultDoc.data()) //TODO arrayDocuments иногда пустой массив (вроде как решил пробелму)
-
       const newUserChats: UserPreview[] = arrayDocuments.map(convertMessageDocumentsToList)
-
       setUserChats(newUserChats)
+      setIsLoading(false)
     })
     return () => {
       unsub()
@@ -47,7 +42,11 @@ const Sidebar = ({ openChat, isChatOpen }: SidebarProps) => {
         setIsSearching={setIsSearching}
         userChats={userChats}
       />
-      <PreviewList list={chats} openChat={openChat} isSearching={isSearching} />
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <PreviewList list={chats} openChat={openChat} isSearching={isSearching} />
+      )}
     </div>
   )
 }

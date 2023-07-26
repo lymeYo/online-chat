@@ -22,24 +22,31 @@ const PreviewList = ({ list, openChat, isSearching }: PreviewListProps) => {
   return (
     <>
       <ul className={styles.list}>
-        {list.map((user: UserPreview, ind: number) => {
-          const openChatHandler = () => {
-            setUserAction(user, dispatch)
-            openChat()
-          }
-          return (
-            <Item
-              key={ind}
-              openChat={openChatHandler}
-              name={user.name}
-              photoURL={user.photoURL}
-              uid={user.uid}
-              text={user.lastMessage}
-              date={user.lastMessageDate}
-              active={currentChat.user?.uid == user.uid}
-            />
-          )
-        })}
+        {list
+          .sort((userA, userB) => userB.time - userA.time)
+          .map((userPreview: UserPreview, ind: number) => {
+            const user = {
+              uid: userPreview.uid,
+              photoURL: userPreview.photoURL,
+              name: userPreview.name
+            }
+            const openChatHandler = () => {
+              setUserAction(user, dispatch)
+              openChat()
+            }
+            return (
+              <Item
+                key={ind}
+                openChat={openChatHandler}
+                name={userPreview.name}
+                photoURL={userPreview.photoURL}
+                uid={userPreview.uid}
+                text={userPreview.lastMessage}
+                date={userPreview.lastMessageDate}
+                active={currentChat.user?.uid == userPreview.uid}
+              />
+            )
+          })}
       </ul>
       <InfoMessage isListEmpty={list.length == 0} isSearching={isSearching} />
     </>

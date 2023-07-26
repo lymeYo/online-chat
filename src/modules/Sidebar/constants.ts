@@ -9,7 +9,7 @@ export type MessageDocument = {
     photoURL: string
     uid: string
   }
-  lastMessage: {
+  lastMessage?: {
     sender: string
     text: string
   }
@@ -17,6 +17,7 @@ export type MessageDocument = {
 export type UserPreview = {
   lastMessage: string
   lastMessageDate: string
+  time: number
 } & UserT
 
 export const getConvertedUserChats = (doc: DocumentSnapshot<DocumentData, DocumentData>) => {
@@ -26,7 +27,6 @@ export const getConvertedUserChats = (doc: DocumentSnapshot<DocumentData, Docume
 
 export const convertMessageDocumentsToList = (data: MessageDocument): UserPreview => {
   const messageDate = new Date(data.date.seconds * 1000)
-  console.log('data herr ', data)
 
   const lastMessageDate = datePassedToString(messageDate)
 
@@ -34,7 +34,8 @@ export const convertMessageDocumentsToList = (data: MessageDocument): UserPrevie
     name: data.userInfo.displayName,
     photoURL: data.userInfo.photoURL,
     uid: data.userInfo.uid,
-    lastMessage: data.lastMessage.text,
+    lastMessage: data.lastMessage?.text ?? '',
+    time: data.date.seconds,
     lastMessageDate
   }
 }

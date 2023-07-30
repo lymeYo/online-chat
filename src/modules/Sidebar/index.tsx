@@ -5,10 +5,9 @@ import { getUser } from '@/Auth/AuthContextProvider'
 import Search from './components/Search'
 import PreviewList from './components/PreviewList'
 import { UserPreview, convertMessageDocumentsToList, getConvertedUserChats } from './constants'
+import Loading from '@/ui/Loading'
 
 import styles from './style.module.css'
-import useLoadingState from '@/hooks/useLoadingState'
-import Loading from '@/ui/Loading'
 
 type SidebarProps = {
   openChat: () => void
@@ -23,18 +22,19 @@ const Sidebar = ({ openChat, isChatOpen }: SidebarProps) => {
 
   useEffect(() => {
     const userChatsRef = doc(db, 'userChats', uid)
+
     const unsub = onSnapshot(userChatsRef, resultDoc => {
       const arrayDocuments = getConvertedUserChats(resultDoc)
+
       const newUserChats: UserPreview[] = arrayDocuments.map(convertMessageDocumentsToList)
       setUserChats(newUserChats)
       setIsLoading(false)
     })
+
     return () => {
       unsub()
     }
-  }, [uid])
-
-  const chats = isSearching ? searchChats : userChats
+  }, [])
   return (
     <div className={`${styles.sidebar} ${isChatOpen ? styles.close : ''}`}>
       <Search
@@ -45,7 +45,11 @@ const Sidebar = ({ openChat, isChatOpen }: SidebarProps) => {
       {isLoading ? (
         <Loading />
       ) : (
-        <PreviewList list={chats} openChat={openChat} isSearching={isSearching} />
+        <PreviewList
+          list={isSearching ? searchChats : userChats}
+          openChat={openChat}
+          isSearching={isSearching}
+        />
       )}
     </div>
   )

@@ -1,10 +1,15 @@
 .wrapper {
   border-top: 1px solid var(--hover-bg-color);
-  /* border-top: 1px solid #fff; */
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  z-index: 5;
+  /* height: 150px; */
+  background-color: var(--main-bg-color);
+}
+.input-row {
   display: flex;
   align-items: center;
-  z-index: 5;
-  background-color: var(--main-bg-color);
 }
 .input {
   width: 100%;
@@ -15,8 +20,9 @@
   width: 100%;
   color: #fff;
 }
-.submit-btn {
-  color: #fff;
+
+.buttons {
   display: flex;
+  align-items: center;
   translate: 0 3px;
 }

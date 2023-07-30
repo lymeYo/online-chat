@@ -1,0 +1,10 @@
+.submit-btn {
+  color: #fff;
+  display: flex;
+}
+
+.add-image-input {
+  visibility:hidden;
+  width:0;
+  height:0
+}

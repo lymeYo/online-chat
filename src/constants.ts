@@ -3,7 +3,7 @@ export const authTokenCookie = 'auth-token'
 export const getCombineIds = (uidA: string, uidB: string) =>
   uidA > uidB ? uidA + uidB : uidB + uidA //иначе если А написал Б то combinedUids будет АБ, а если Б написал А - то БА, хотя чат один
 
-export const datePassedToString = (date: Date): string => {
+export const dateToStringFormat = (date: Date): string => {
   const secPerDay = 1000 * 60 * 60 * 24
   const nowDate = new Date()
   const daysDist = (nowDate.getTime() - date.getTime()) / secPerDay //высчитываю сколько дней назад было последнее сообщение пользователю

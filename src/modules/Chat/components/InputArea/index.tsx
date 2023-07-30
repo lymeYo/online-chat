@@ -1,55 +1,97 @@
-import { useEffect, useRef } from 'react'
-import { Timestamp, arrayUnion, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
-import Icon from './Icon'
+import { Timestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore'
+import { useCallback, useRef, useState } from 'react'
+import { v4 as uuid } from 'uuid'
+import Submit from './Buttons/Submit'
+import AddImage from './Buttons/AddImage'
 import Input from './Input'
 import { getCurrentChat } from '@/ChatProvider/ChatContextProvider'
 import { db } from '@/database/firebase'
-import { v4 as uuid } from 'uuid'
+import { UserT, getUser } from '@/Auth/AuthContextProvider'
+import ImagesRow from './ImagesRow'
 
 import styles from './style.module.css'
-import { UserT, getUser } from '@/Auth/AuthContextProvider'
-import { getCombineIds } from '@/constants'
 
-const InputArea = () => {
-  const inputRef = useRef<HTMLInputElement>(null)
+type InputAreaProps = {
+  setImagesSelected: (isSelected: boolean) => void
+}
+//TODO
+const InputArea = ({ setImagesSelected }: InputAreaProps) => {
+  const inputTextRef = useRef<HTMLInputElement>(null)
+  const inputAddImageRef = useRef<HTMLInputElement>(null)
+  const [downloadUrls, setDownloadUrls] = useState<string[]>([])
+  const handleDownloadUrls = (urls: string[]) => {
+    setImagesSelected(urls.length != 0)
+    setDownloadUrls(urls)
+  }
   const { chatId, user } = getCurrentChat()
-  const { uid: ownerUid } = getUser()
   const { uid } = user as UserT
+  const { uid: ownerUid } = getUser()
 
-  const sendMessage = async () => {
-    const text = inputRef.current?.value ?? ''
-    if (inputRef.current) inputRef.current.value = ''
+  const handleSendMessage = useCallback(() => {
+    if (inputAddImageRef.current) inputAddImageRef.current.value = ''
+    sendMessageByPortions(downloadUrls)
+    handleDownloadUrls([]) //очищаю загруженные фотографии
+  }, [downloadUrls])
+
+  const sendMessageByPortions = async (urls: string[]) => {
+    //Делю все картинки на порции по urlsPerPortion штук
+    const urlsPerPortion = 3
+    const portions = Math.ceil(urls.length / urlsPerPortion) || 1
+    const lastPortionUrls = urls.length % urlsPerPortion || urlsPerPortion
+    let start = 0
+    let end = urlsPerPortion
+    for (let i = 1; i <= portions; i++) {
+      const portionUrls = urls.slice(start, end)
+      await sendMessage(portionUrls)
+      start = end
+      end = i + 1 == portions ? end + lastPortionUrls : end + urlsPerPortion
+    }
+  }
+
+  const sendMessage = async (urls: string[]) => {
+    const text = inputTextRef.current?.value ?? ''
+    if (inputTextRef.current) inputTextRef.current.value = ''
     const chatsRef = doc(db, 'chats', chatId as string)
     const ownerChatsRef = doc(db, 'userChats', ownerUid)
     const userChatsRef = doc(db, 'userChats', uid)
+
     await updateDoc(chatsRef, {
       messages: arrayUnion({
         id: uuid(),
         text,
         senderId: ownerUid,
-        date: Timestamp.now()
+        date: Timestamp.now(),
+        images: urls
       })
     })
+
     await updateDoc(ownerChatsRef, {
       [chatId + '.lastMessage']: {
         text,
         sender: ownerUid
       },
-      [chatId + '.date']: serverTimestamp()
+      [chatId + '.date']: Timestamp.now()
     })
+
     await updateDoc(userChatsRef, {
       [chatId + '.lastMessage']: {
         text,
         sender: ownerUid
       },
-      [chatId + '.date']: serverTimestamp()
+      [chatId + '.date']: Timestamp.now()
     })
   }
 
   return (
     <div className={styles.wrapper}>
-      <Input sendMessage={sendMessage} inputRef={inputRef} />
-      <Icon onSubmit={sendMessage} />
+      <div className={styles['input-row']}>
+        <Input sendMessage={handleSendMessage} inputRef={inputTextRef} />
+        <div className={styles.buttons}>
+          <AddImage inputRef={inputAddImageRef} setDownloadUrls={handleDownloadUrls} />
+          <Submit onSubmit={handleSendMessage} />
+        </div>
+      </div>
+      <ImagesRow images={downloadUrls} />
     </div>
   )
 }

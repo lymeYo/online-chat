@@ -1,10 +1,10 @@
 import styles from './style.module.css'
 import globalStyles from '@/globalStyles.module.css'
 
-type IconProps = {
+type SubmitProps = {
   onSubmit: () => void
 }
-const Icon = ({ onSubmit }: IconProps) => {
+const Submit = ({ onSubmit }: SubmitProps) => {
   return (
     <button className={styles['submit-btn']} onClick={onSubmit}>
       <div className={globalStyles['icon-wrapper']}>
@@ -26,4 +26,4 @@ const Icon = ({ onSubmit }: IconProps) => {
     </button>
   )
 }
-export default Icon
+export default Submit

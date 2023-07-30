@@ -5,6 +5,7 @@ import ParametersPanel from './components/ParametersPanel'
 import InfoMessage from './components/InfoMessage'
 
 import styles from './style.module.css'
+import { useState } from 'react'
 
 type ChatProps = {
   closeChat: () => void
@@ -12,13 +13,14 @@ type ChatProps = {
 }
 
 const Chat = ({ closeChat, isChatOpen }: ChatProps) => {
+  const [isImagesSelected, setImagesSelected] = useState<boolean>(false)
   return (
     <div className={`${styles.chat} ${isChatOpen ? styles.open : ''}`}>
       {isChatSelected() ? (
         <>
           <ParametersPanel closeChat={closeChat} isChatOpen={isChatOpen} />
-          <MessageArea />
-          <InputArea />
+          <MessageArea isImagesSelected={isImagesSelected} />
+          <InputArea setImagesSelected={setImagesSelected} />
         </>
       ) : (
         <InfoMessage />

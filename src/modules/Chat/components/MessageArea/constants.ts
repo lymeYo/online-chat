@@ -5,4 +5,5 @@ export type MessageT = {
   id: string
   senderId: string
   text: string
+  images?: string[]
 }

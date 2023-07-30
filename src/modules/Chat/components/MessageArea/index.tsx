@@ -2,16 +2,19 @@ import Message from './Message'
 import { db } from '@/database/firebase'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { getUser } from '@/Auth/AuthContextProvider'
-import { getCombineIds } from '@/constants'
+import { dateToStringFormat, getCombineIds } from '@/constants'
 import { getCurrentChat } from '@/ChatProvider/ChatContextProvider'
 import { MessageT } from './constants'
 import useLoadingState from '@/hooks/useLoadingState'
+import Loading from '@/ui/Loading'
 import { useEffect, useRef } from 'react'
 
 import styles from './style.module.css'
-import Loading from '@/ui/Loading'
 
-const MessageArea = () => {
+type MessageAreaProps = {
+  isImagesSelected: boolean
+}
+const MessageArea = ({ isImagesSelected }: MessageAreaProps) => {
   const { uid: ownerUid } = getUser()
   const { user } = getCurrentChat()
   const [loading, messages, setMessages] = useLoadingState<MessageT[]>()
@@ -44,15 +47,32 @@ const MessageArea = () => {
   }, [user])
 
   return (
-    <div className={styles.wrapper} ref={chatElementRef} id='test'>
+    <div
+      className={`${styles.wrapper} ${isImagesSelected ? styles['with-images'] : ''}`}
+      ref={chatElementRef}
+      id='test'
+    >
       {messages &&
-        messages.map(message => (
-          <Message
-            key={message.id}
-            text={message.text}
-            type={message.senderId == ownerUid ? 'outcoming' : 'incoming'}
-          />
-        ))}
+        messages.map((message, ind) => {
+          const messageDate = new Date(message.date.seconds * 1000)
+          const time = dateToStringFormat(messageDate)
+          const images = message.images ?? []
+          let imgsCounter = 1
+          const handleOnLoadImage = () => {
+            if (imgsCounter == images.length && ind + 1 == messages.length) scrollChatToBottom()
+            imgsCounter++
+          }
+          return (
+            <Message
+              key={message.id}
+              text={message.text}
+              time={time}
+              handleOnLoadImage={handleOnLoadImage}
+              imagesUrls={images}
+              type={message.senderId == ownerUid ? 'outcoming' : 'incoming'}
+            />
+          )
+        })}
       {loading ? <Loading /> : ''}
     </div>
   )

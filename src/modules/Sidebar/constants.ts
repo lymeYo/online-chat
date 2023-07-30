@@ -1,5 +1,5 @@
 import { UserT } from '@/Auth/AuthContextProvider'
-import { datePassedToString } from '@/constants'
+import { dateToStringFormat } from '@/constants'
 import { DocumentData, DocumentSnapshot, Timestamp } from 'firebase/firestore'
 
 export type MessageDocument = {
@@ -28,7 +28,7 @@ export const getConvertedUserChats = (doc: DocumentSnapshot<DocumentData, Docume
 export const convertMessageDocumentsToList = (data: MessageDocument): UserPreview => {
   const messageDate = new Date(data.date.seconds * 1000)
 
-  const lastMessageDate = datePassedToString(messageDate)
+  const lastMessageDate = dateToStringFormat(messageDate)
 
   return {
     name: data.userInfo.displayName,

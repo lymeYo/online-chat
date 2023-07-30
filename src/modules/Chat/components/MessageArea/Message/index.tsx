@@ -1,10 +1,14 @@
+import ImageList from './ImagesList'
 import styles from './style.module.css'
 
 type MessageProps = {
   text: string
   type: 'incoming' | 'outcoming'
+  time: string
+  imagesUrls: string[]
+  handleOnLoadImage: () => void
 }
-const Message = ({ text, type }: MessageProps) => {
+const Message = ({ text, type, time, imagesUrls, handleOnLoadImage }: MessageProps) => {
   const classFromType = type == 'incoming' ? 'in' : 'out'
   return (
     <div className={`${styles['message-wrapper']} ${styles[classFromType]}`}>
@@ -12,7 +16,8 @@ const Message = ({ text, type }: MessageProps) => {
         <div className={`${styles.box} ${styles['box-2']} ${styles[classFromType]}`}></div>
         <div className={`${styles.box} ${styles['box-1']} ${styles[classFromType]}`}></div>
         {text}
-        <div className={`${styles.time}  ${styles[classFromType]}`}>21:02</div>
+        <ImageList handleOnLoadImage={handleOnLoadImage} urls={imagesUrls} />
+        <div className={`${styles.time}  ${styles[classFromType]}`}>{time}</div>
       </div>
     </div>
   )

@@ -9,8 +9,9 @@ import styles from './style.module.css'
 type AddImageProps = {
   inputRef: RefObject<HTMLInputElement>
   setDownloadUrls: (urls: string[]) => void
+  focusOnInput: () => void
 }
-const AddImage = ({ inputRef, setDownloadUrls }: AddImageProps) => {
+const AddImage = ({ inputRef, setDownloadUrls, focusOnInput }: AddImageProps) => {
   useEffect(() => {
     const changeHandler = async () => {
       const images = Object.values(inputRef.current?.files ?? [])
@@ -28,6 +29,7 @@ const AddImage = ({ inputRef, setDownloadUrls }: AddImageProps) => {
 
       downloadUrls = await Promise.all(promises)
       setDownloadUrls(downloadUrls)
+      focusOnInput()
     }
     inputRef.current?.addEventListener('change', changeHandler)
     return () => {

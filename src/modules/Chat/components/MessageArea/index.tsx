@@ -1,6 +1,6 @@
 import Message from './Message'
 import { db } from '@/database/firebase'
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { getUser } from '@/Auth/AuthContextProvider'
 import { dateToStringFormat, getCombineIds } from '@/constants'
 import { getCurrentChat } from '@/ChatProvider/ChatContextProvider'
@@ -13,8 +13,9 @@ import styles from './style.module.css'
 
 type MessageAreaProps = {
   isImagesSelected: boolean
+  handleGalleryData: (images: string[], senderName: string) => void
 }
-const MessageArea = ({ isImagesSelected }: MessageAreaProps) => {
+const MessageArea = ({ isImagesSelected, handleGalleryData }: MessageAreaProps) => {
   const { uid: ownerUid } = getUser()
   const { user } = getCurrentChat()
   const [loading, messages, setMessages] = useLoadingState<MessageT[]>()
@@ -62,12 +63,21 @@ const MessageArea = ({ isImagesSelected }: MessageAreaProps) => {
             if (imgsCounter == images.length && ind + 1 == messages.length) scrollChatToBottom()
             imgsCounter++
           }
+
+          const handleOpenGallery = async () => {
+            const usersRef = doc(db, 'users', message.senderId)
+            const result = await getDoc(usersRef)
+            const senderName = result.data()?.displayName ?? ''
+            handleGalleryData(images, senderName)
+          }
+
           return (
             <Message
               key={message.id}
               text={message.text}
               time={time}
               handleOnLoadImage={handleOnLoadImage}
+              handleOpenGallery={handleOpenGallery}
               imagesUrls={images}
               type={message.senderId == ownerUid ? 'outcoming' : 'incoming'}
             />

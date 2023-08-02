@@ -3,7 +3,7 @@ import { dateToStringFormat } from '@/constants'
 import { DocumentData, DocumentSnapshot, Timestamp } from 'firebase/firestore'
 
 export type MessageDocument = {
-  date: Timestamp
+  date: Timestamp | null
   userInfo: {
     displayName: string
     photoURL: string
@@ -26,16 +26,20 @@ export const getConvertedUserChats = (doc: DocumentSnapshot<DocumentData, Docume
 }
 
 export const convertMessageDocumentsToList = (data: MessageDocument): UserPreview => {
-  const messageDate = new Date(data.date.seconds * 1000)
-
-  const lastMessageDate = dateToStringFormat(messageDate)
+  let lastMessageDate: string
+  if (data.date) {
+    const messageDate = new Date(data.date.seconds * 1000)
+    lastMessageDate = dateToStringFormat(messageDate)
+  } else {
+    lastMessageDate = ''
+  }
 
   return {
     name: data.userInfo.displayName,
     photoURL: data.userInfo.photoURL,
     uid: data.userInfo.uid,
     lastMessage: data.lastMessage?.text ?? '',
-    time: data.date.seconds,
+    time: data.date?.seconds ?? -1,
     lastMessageDate
   }
 }

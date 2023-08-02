@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Sidebar from './modules/Sidebar'
 import Chat from './modules/Chat'
 import { AuthContextProvider } from './Auth/AuthContextProvider'

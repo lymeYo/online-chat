@@ -1,5 +1,5 @@
 import { Timestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import Submit from './Buttons/Submit'
 import AddImage from './Buttons/AddImage'
@@ -14,7 +14,6 @@ import styles from './style.module.css'
 type InputAreaProps = {
   setImagesSelected: (isSelected: boolean) => void
 }
-//TODO
 const InputArea = ({ setImagesSelected }: InputAreaProps) => {
   const inputTextRef = useRef<HTMLInputElement>(null)
   const inputAddImageRef = useRef<HTMLInputElement>(null)
@@ -23,9 +22,17 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
     setImagesSelected(urls.length != 0)
     setDownloadUrls(urls)
   }
+  const deleteDownloadUrlByInd = (indForDelete: number) => {
+    const newDownloadUrls = downloadUrls.filter((_, ind) => ind != indForDelete)
+    handleDownloadUrls(newDownloadUrls)
+  }
   const { chatId, user } = getCurrentChat()
   const { uid } = user as UserT
   const { uid: ownerUid } = getUser()
+
+  const focusOnInput = () => {
+    inputTextRef.current?.focus()
+  }
 
   const handleSendMessage = useCallback(() => {
     if (inputAddImageRef.current) inputAddImageRef.current.value = ''
@@ -65,33 +72,36 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
       })
     })
 
-    await updateDoc(ownerChatsRef, {
+    const dataForUpdateDoc = {
       [chatId + '.lastMessage']: {
-        text,
+        text: text.replace(/\s/g, '') == '' && urls.length != 0 ? 'Фотография' : text,
         sender: ownerUid
       },
       [chatId + '.date']: Timestamp.now()
-    })
+    }
 
-    await updateDoc(userChatsRef, {
-      [chatId + '.lastMessage']: {
-        text,
-        sender: ownerUid
-      },
-      [chatId + '.date']: Timestamp.now()
-    })
+    await updateDoc(ownerChatsRef, dataForUpdateDoc)
+
+    await updateDoc(userChatsRef, dataForUpdateDoc)
   }
 
+  useEffect(() => {
+    inputTextRef.current?.focus()
+  })
   return (
     <div className={styles.wrapper}>
       <div className={styles['input-row']}>
         <Input sendMessage={handleSendMessage} inputRef={inputTextRef} />
         <div className={styles.buttons}>
-          <AddImage inputRef={inputAddImageRef} setDownloadUrls={handleDownloadUrls} />
+          <AddImage
+            inputRef={inputAddImageRef}
+            setDownloadUrls={handleDownloadUrls}
+            focusOnInput={focusOnInput}
+          />
           <Submit onSubmit={handleSendMessage} />
         </div>
       </div>
-      <ImagesRow images={downloadUrls} />
+      <ImagesRow images={downloadUrls} deleteImageByInd={deleteDownloadUrlByInd} />
     </div>
   )
 }

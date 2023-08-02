@@ -53,6 +53,7 @@ const Item = ({ openChat, active, name, uid, photoURL, text, date }: ItemProps) 
     openChat()
     await handleUserChats()
   }
+
   return (
     <li onClick={clickHandler} className={`${styles.item} ${active ? styles.active : ''}`}>
       <div className={styles.image}>

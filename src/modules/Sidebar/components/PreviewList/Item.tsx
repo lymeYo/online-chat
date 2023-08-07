@@ -26,7 +26,10 @@ const Item = ({ openChat, active, name, uid, photoURL, text, date }: ItemProps) 
     if (!result.exists()) {
       const userChatsRef = doc(db, 'userChats', uid)
       const ownerChatsRef = doc(db, 'userChats', ownerUid)
-      await setDoc(chatsRef, { messages: [] })
+
+      await setDoc(chatsRef, {})
+      await setDoc(ownerChatsRef, {})
+      await setDoc(userChatsRef, {})
 
       //создаю user chats
       await updateDoc(ownerChatsRef, {

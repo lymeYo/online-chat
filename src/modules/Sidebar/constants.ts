@@ -33,6 +33,7 @@ export const convertMessageDocumentsToList = (data: MessageDocument): UserPrevie
   } else {
     lastMessageDate = ''
   }
+  console.log(data)
 
   return {
     name: data.userInfo.displayName,

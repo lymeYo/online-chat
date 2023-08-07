@@ -1,4 +1,12 @@
-import { Timestamp, arrayUnion, doc, updateDoc } from 'firebase/firestore'
+import {
+  Timestamp,
+  addDoc,
+  arrayUnion,
+  collection,
+  doc,
+  setDoc,
+  updateDoc
+} from 'firebase/firestore'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import Submit from './Buttons/Submit'
@@ -57,19 +65,19 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
 
   const sendMessage = async (urls: string[]) => {
     const text = inputTextRef.current?.value ?? ''
+    const messageId = uuid()
     if (inputTextRef.current) inputTextRef.current.value = ''
-    const chatsRef = doc(db, 'chats', chatId as string)
+
     const ownerChatsRef = doc(db, 'userChats', ownerUid)
     const userChatsRef = doc(db, 'userChats', uid)
+    const messageRef = doc(db, 'chats', chatId as string, 'messages', messageId)
 
-    await updateDoc(chatsRef, {
-      messages: arrayUnion({
-        id: uuid(),
-        text,
-        senderId: ownerUid,
-        date: Timestamp.now(),
-        images: urls
-      })
+    await setDoc(messageRef, {
+      id: messageId,
+      text,
+      senderId: ownerUid,
+      date: Timestamp.now(),
+      images: urls
     })
 
     const dataForUpdateDoc = {

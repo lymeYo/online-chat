@@ -6,18 +6,22 @@ type ImageProps = {
   url: string
   ind: number
   deleteImageByInd: (ind: number) => void
+  handleLoading: () => void
 }
-const Image = ({ url, ind, deleteImageByInd }: ImageProps) => {
+const Image = ({ url, ind, deleteImageByInd, handleLoading }: ImageProps) => {
   const handleDelete = () => {
     deleteImageByInd(ind)
   }
+  const handleLoad = () => {
+    handleLoading()
+  }
   return (
-    <li className={styles.item} key={ind}>
+    <div className={styles.item} key={ind}>
       <img src={url} alt='' />
       <div className={styles.cross} onClick={handleDelete}>
-        <img src={crossImage} alt='' />
+        <img src={crossImage} alt='' onLoad={handleLoad} />
       </div>
-    </li>
+    </div>
   )
 }
 export default Image

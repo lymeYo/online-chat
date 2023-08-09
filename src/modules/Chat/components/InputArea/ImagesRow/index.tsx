@@ -1,18 +1,36 @@
-import Image from './Image'
+import { useState } from 'react'
+import List from './List'
+import SkeletonsList from './SkeletonsList'
+
 import styles from './style.module.css'
 
 type ImagesRowProps = {
   images: string[]
+  imagesLength: number
   deleteImageByInd: (ind: number) => void
+  areImagesLoading: boolean
+  finishImagesLoading: () => void
 }
-const ImagesRow = ({ images, deleteImageByInd }: ImagesRowProps) => {
-  if (images.length == 0) return ''
+const ImagesRow = ({
+  images,
+  imagesLength,
+  deleteImageByInd,
+  areImagesLoading,
+  finishImagesLoading
+}: ImagesRowProps) => {
   return (
-    <ul className={styles.list}>
-      {images.map((url, ind) => (
-        <Image key={ind} url={url} ind={ind} deleteImageByInd={deleteImageByInd} />
-      ))}
-    </ul>
+    <>
+      <div className={areImagesLoading || !images.length ? styles.none : ''}>
+        <List
+          images={images}
+          deleteImageByInd={deleteImageByInd}
+          finishLoading={finishImagesLoading}
+        />
+      </div>
+      <div className={areImagesLoading ? '' : styles.none}>
+        <SkeletonsList length={imagesLength} />
+      </div>
+    </>
   )
 }
 

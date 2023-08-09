@@ -10,11 +10,18 @@ type AddImageProps = {
   inputRef: RefObject<HTMLInputElement>
   setDownloadUrls: (urls: string[]) => void
   focusOnInput: () => void
+  startImagesLoading: (length: number) => void
 }
-const AddImage = ({ inputRef, setDownloadUrls, focusOnInput }: AddImageProps) => {
+const AddImage = ({
+  inputRef,
+  setDownloadUrls,
+  focusOnInput,
+  startImagesLoading
+}: AddImageProps) => {
   useEffect(() => {
     const changeHandler = async () => {
       const images = Object.values(inputRef.current?.files ?? [])
+      startImagesLoading(images.length)
       const promises: Promise<string>[] = []
       let downloadUrls: string[] = []
       images.forEach(async img => {

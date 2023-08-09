@@ -26,6 +26,9 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
   const inputTextRef = useRef<HTMLInputElement>(null)
   const inputAddImageRef = useRef<HTMLInputElement>(null)
   const [downloadUrls, setDownloadUrls] = useState<string[]>([])
+  const [areImagesLoading, setImagesLoading] = useState<boolean>(false)
+  const [imagesLength, setImagesLength] = useState<number>(0)
+
   const handleDownloadUrls = (urls: string[]) => {
     setImagesSelected(urls.length != 0)
     setDownloadUrls(urls)
@@ -93,6 +96,14 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
     await updateDoc(userChatsRef, dataForUpdateDoc)
   }
 
+  const startImagesLoading = (length: number) => {
+    setImagesLoading(true)
+    setImagesLength(length)
+  }
+  const finishImagesLoading = () => {
+    setImagesLoading(false)
+  }
+
   useEffect(() => {
     inputTextRef.current?.focus()
   })
@@ -105,11 +116,18 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
             inputRef={inputAddImageRef}
             setDownloadUrls={handleDownloadUrls}
             focusOnInput={focusOnInput}
+            startImagesLoading={startImagesLoading}
           />
           <Submit onSubmit={handleSendMessage} />
         </div>
       </div>
-      <ImagesRow images={downloadUrls} deleteImageByInd={deleteDownloadUrlByInd} />
+      <ImagesRow
+        images={downloadUrls}
+        imagesLength={imagesLength}
+        deleteImageByInd={deleteDownloadUrlByInd}
+        areImagesLoading={areImagesLoading}
+        finishImagesLoading={finishImagesLoading}
+      />
     </div>
   )
 }

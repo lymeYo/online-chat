@@ -1,3 +1,5 @@
+import { db } from '@/database/firebase'
+import { doc, getDoc } from 'firebase/firestore'
 import ImageList from './ImagesList'
 import styles from './style.module.css'
 
@@ -6,18 +8,26 @@ type MessageProps = {
   type: 'incoming' | 'outcoming'
   time: string
   imagesUrls: string[]
+  senderId: string
   handleOnLoadImage: () => void
-  handleOpenGallery: () => void
+  handleGalleryData: (images: string[], senderName: string) => void
 }
 const Message = ({
   text,
   type,
   time,
   imagesUrls,
+  senderId,
   handleOnLoadImage,
-  handleOpenGallery
+  handleGalleryData
 }: MessageProps) => {
   const classFromType = type == 'incoming' ? 'in' : 'out'
+  const handleOpenGallery = async () => {
+    const usersRef = doc(db, 'users', senderId)
+    const result = await getDoc(usersRef)
+    const senderName = result.data()?.displayName ?? ''
+    handleGalleryData(imagesUrls, senderName)
+  }
   return (
     <div className={`${styles['message-wrapper']} ${styles[classFromType]}`}>
       <div className={`${styles.message} ${styles[classFromType]}`}>

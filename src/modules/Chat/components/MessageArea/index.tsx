@@ -29,14 +29,14 @@ type MessageAreaProps = {
   handleGalleryData: (images: string[], senderName: string) => void
 }
 const MessageArea = ({ isImagesSelected, handleGalleryData }: MessageAreaProps) => {
-  const { uid: ownerUid } = getUser()
-  const { user } = getCurrentChat()
   const [loading, messages, setMessages] = useLoadingState<MessageT[]>()
   const areMessagesOver = useRef<boolean>(false)
   const scrollStatusRef = useRef<scrollStatus>('down')
   const prevScrollHeight = useRef<number>(0)
   const lastMessageDateRef = useRef<null | Timestamp>(null)
   const chatElementRef = useRef<HTMLDivElement>(null)
+  const { uid: ownerUid } = getUser()
+  const { user } = getCurrentChat()
 
   const sortingMessagesCB = (messA: MessageT, messB: MessageT) => {
     const secondsA = messA.date.seconds
@@ -168,26 +168,16 @@ const MessageArea = ({ isImagesSelected, handleGalleryData }: MessageAreaProps) 
     <div
       className={`${styles.wrapper} ${isImagesSelected ? styles['with-images'] : ''}`}
       ref={chatElementRef}
-      id='test'
     >
       {messages &&
         messages.map((message, ind) => {
           const messageDate = new Date(message.date.seconds * 1000)
           const time = dateToStringFormat(messageDate)
           const images = message.images ?? []
-          let imgsCounter = 1
+          let loadedImgsCounter = 0
           const handleOnLoadImage = () => {
-            if (imgsCounter == images.length && ind + 1 == messages.length) {
-              scrollChatToBottom()
-            }
-            imgsCounter++
-          }
-
-          const handleOpenGallery = async () => {
-            const usersRef = doc(db, 'users', message.senderId)
-            const result = await getDoc(usersRef)
-            const senderName = result.data()?.displayName ?? ''
-            handleGalleryData(images, senderName)
+            loadedImgsCounter++
+            if (loadedImgsCounter == message.images?.length) scrollChatToBottom()
           }
 
           return (
@@ -196,9 +186,10 @@ const MessageArea = ({ isImagesSelected, handleGalleryData }: MessageAreaProps) 
               text={message.text}
               time={time}
               handleOnLoadImage={handleOnLoadImage}
-              handleOpenGallery={handleOpenGallery}
               imagesUrls={images}
               type={message.senderId == ownerUid ? 'outcoming' : 'incoming'}
+              senderId={message.senderId}
+              handleGalleryData={handleGalleryData}
             />
           )
         })}

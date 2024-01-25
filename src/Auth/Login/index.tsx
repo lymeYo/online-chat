@@ -1,12 +1,10 @@
 import { auth, db, provider } from '@/database/firebase'
 import { signInWithPopup } from 'firebase/auth'
 import { doc, setDoc } from 'firebase/firestore'
-import Cookies from 'universal-cookie'
 import { authTokenCookie } from '@/constants'
+import Cookies from 'js-cookie'
 
 import styles from './styles.module.css'
-
-const cookies = new Cookies()
 
 type LoginProps = {
   setIsAuth: (isAuth: boolean) => void
@@ -15,7 +13,7 @@ const Login = ({ setIsAuth }: LoginProps) => {
   const signInWithGoogle = async () => {
     try {
       const result = await signInWithPopup(auth, provider)
-      cookies.set(authTokenCookie, result.user.refreshToken)
+      Cookies.set(authTokenCookie, result.user.refreshToken)
       setIsAuth(!!result.user.refreshToken)
 
       const { displayName, photoURL, uid } = result.user

@@ -1,9 +1,11 @@
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import Icon from './Icon'
-import styles from './styles.module.css'
 import { db } from '@/database/firebase'
 import { useRef } from 'react'
 import { UserPreview } from '../../constants'
+import { useDebounce } from '@/hooks/useDebounce'
+
+import styles from './styles.module.css'
 
 type SearchProps = {
   setSearchChats: (results: UserPreview[]) => void
@@ -42,7 +44,9 @@ const Search = ({ setSearchChats, setIsSearching, userChats }: SearchProps) => {
       console.error(err)
     }
   }
-  const handleChange = async () => {
+
+  const delayHandleChange = 250 //ms
+  const handleChange = useDebounce(async () => {
     const name = inputRef.current?.value
 
     if (!name) setIsSearching(false)
@@ -50,7 +54,7 @@ const Search = ({ setSearchChats, setIsSearching, userChats }: SearchProps) => {
       setIsSearching(true)
       await handleSearch()
     }
-  }
+  }, delayHandleChange)
   return (
     <div className={styles['search-wrapper']}>
       <div className={styles.search}>

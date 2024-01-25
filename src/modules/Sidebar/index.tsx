@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { doc, onSnapshot } from 'firebase/firestore'
 import { db } from '@/database/firebase'
-import { getUser } from '@/Auth/AuthContextProvider'
+import { UserT, getUser } from '@/Auth/AuthContextProvider'
 import Search from './components/Search'
 import PreviewList from './components/PreviewList'
 import { UserPreview, convertMessageDocumentsToList, getConvertedUserChats } from './constants'
@@ -36,7 +36,10 @@ const Sidebar = ({ openChat, isChatOpen }: SidebarProps) => {
     }
   }, [])
   return (
-    <div className={`${styles.sidebar} ${isChatOpen ? styles.close : ''}`}>
+    <div
+      className={`${styles.sidebar} ${isChatOpen ? styles.close : ''}`}
+      data-testid='main-sidebar'
+    >
       <Search
         setSearchChats={setSearchChats}
         setIsSearching={setIsSearching}

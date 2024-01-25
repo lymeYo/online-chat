@@ -1,13 +1,11 @@
-import Cookies from 'universal-cookie'
-
-import styles from './style.module.css'
+import Cookies from 'js-cookie'
 import { authTokenCookie } from '@/constants'
 
-const cookies = new Cookies()
+import styles from './style.module.css'
 
 const IconExit = () => {
   const handleClick = () => {
-    cookies.remove(authTokenCookie)
+    Cookies.remove(authTokenCookie)
     window.location.reload()
   }
   return (

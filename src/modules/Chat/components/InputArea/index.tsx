@@ -45,11 +45,11 @@ const InputArea = ({ setImagesSelected }: InputAreaProps) => {
     inputTextRef.current?.focus()
   }
 
-  const handleSendMessage = useCallback(() => {
+  const handleSendMessage = () => {
     if (inputAddImageRef.current) inputAddImageRef.current.value = ''
     sendMessageByPortions(downloadUrls)
     handleDownloadUrls([]) //очищаю загруженные фотографии
-  }, [downloadUrls])
+  }
 
   const sendMessageByPortions = async (urls: string[]) => {
     //Делю все картинки на порции по urlsPerPortion штук

@@ -18,7 +18,7 @@ import { getCurrentChat } from '@/ChatProvider/ChatContextProvider'
 import { MessageT } from './constants'
 import useLoadingState from '@/hooks/useLoadingState'
 import Loading from '@/ui/Loading'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useTransition } from 'react'
 
 import styles from './style.module.css'
 
@@ -30,11 +30,13 @@ type MessageAreaProps = {
 }
 const MessageArea = ({ isImagesSelected, handleGalleryData }: MessageAreaProps) => {
   const [loading, messages, setMessages] = useLoadingState<MessageT[]>()
+
   const areMessagesOver = useRef<boolean>(false)
   const scrollStatusRef = useRef<scrollStatus>('down')
   const prevScrollHeight = useRef<number>(0)
   const lastMessageDateRef = useRef<null | Timestamp>(null)
   const chatElementRef = useRef<HTMLDivElement>(null)
+
   const { uid: ownerUid } = getUser()
   const { user } = getCurrentChat()
 

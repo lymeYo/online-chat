@@ -29,7 +29,7 @@ const Message = ({
     handleGalleryData(imagesUrls, senderName)
   }
   return (
-    <div className={`${styles['message-wrapper']} ${styles[classFromType]}`}>
+    <div className={`${styles['message-wrapper']} ${styles[classFromType]}`} data-testid='message'>
       <div className={`${styles.message} ${styles[classFromType]}`}>
         <div className={`${styles.box} ${styles['box-2']} ${styles[classFromType]}`}></div>
         <div className={`${styles.box} ${styles['box-1']} ${styles[classFromType]}`}></div>
@@ -39,7 +39,7 @@ const Message = ({
           handleOnLoadImage={handleOnLoadImage}
           urls={imagesUrls}
         />
-        <div className={`${styles.time}  ${styles[classFromType]}`}>{time}</div>
+        <div className={`${styles.time} ${styles[classFromType]}`}>{time}</div>
       </div>
     </div>
   )

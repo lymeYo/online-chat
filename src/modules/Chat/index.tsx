@@ -1,12 +1,14 @@
 import { isChatSelected } from '@/ChatProvider/ChatContextProvider'
 import InputArea from './components/InputArea'
-import MessageArea from './components/MessageArea'
 import ParametersPanel from './components/ParametersPanel'
 import InfoMessage from './components/InfoMessage'
+import React, { useState, Suspense } from 'react'
+import Gallery from './components/Gallery'
+
+// import MessageArea from './components/MessageArea'
+const MessageArea = React.lazy(() => import('./components/MessageArea'))
 
 import styles from './style.module.css'
-import { useState } from 'react'
-import Gallery from './components/Gallery'
 
 type ChatProps = {
   closeChat: () => void
@@ -31,10 +33,12 @@ const Chat = ({ closeChat, isChatOpen }: ChatProps) => {
         {isChatSelected() ? (
           <>
             <ParametersPanel closeChat={closeChat} isChatOpen={isChatOpen} />
-            <MessageArea
-              isImagesSelected={isImagesSelected}
-              handleGalleryData={handleGalleryData}
-            />
+            <Suspense fallback={<div>Загрузка...</div>}>
+              <MessageArea
+                isImagesSelected={isImagesSelected}
+                handleGalleryData={handleGalleryData}
+              />
+            </Suspense>
             <InputArea setImagesSelected={setImagesSelected} />
           </>
         ) : (

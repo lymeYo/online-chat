@@ -1,11 +1,10 @@
 import { auth } from '@/database/firebase'
 import { User, onAuthStateChanged } from 'firebase/auth'
 import { createContext, useContext, useMemo, useState } from 'react'
+import Cookies from 'js-cookie'
 import Login from './Login'
-import Cookies from 'universal-cookie'
 import { authTokenCookie } from '@/constants'
 import Loading from '@/ui/Loading'
-const cookies = new Cookies()
 
 export type UserT = {
   name: string
@@ -22,13 +21,13 @@ type AuthContextProviderProps = {
   children: React.ReactNode
 }
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-  const [isAuth, setIsAuth] = useState<boolean>(cookies.get(authTokenCookie))
+  const [isAuth, setIsAuth] = useState<boolean>(Boolean(Cookies.get(authTokenCookie)))
   const [currentUser, setCurrentUser] = useState<UserT | null>(null)
 
   useMemo(() => {
     onAuthStateChanged(auth, (userData: User | null) => {
       if (!isUserDataValid(userData)) {
-        if (cookies.get(authTokenCookie)) cookies.remove(authTokenCookie)
+        if (Cookies.get(authTokenCookie)) Cookies.remove(authTokenCookie)
         return
       }
       const user: UserT = {
@@ -39,7 +38,7 @@ export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
 
       setCurrentUser(user)
       setIsAuth(true)
-      if (!cookies.get(authTokenCookie)) cookies.set(authTokenCookie, userData.refreshToken)
+      if (!Cookies.get(authTokenCookie)) Cookies.set(authTokenCookie, userData.refreshToken)
     })
   }, [auth])
 
